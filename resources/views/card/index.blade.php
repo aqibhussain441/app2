@@ -5,6 +5,7 @@
 
     <ul>
 @forelse ($cards as $card)
+        <li>Hintergrundfarbe: #{{ $card->bg_color }}</li>
         <li><img src="{{ route('cards.generate_svg', ['card' => $card])}}" width="85mm" height="55mm"></li>
         <li>Id {{ $card->id }}, Hintergrundfarbe: #{{ $card->bg_color }}, is_allowed: {{ $card->is_allowed ? 'Ja' : 'Nein' }}</li>
         <li>

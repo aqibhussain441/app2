@@ -16,6 +16,9 @@ class CardController extends Controller
      */
     public function index()
     {
+        $cards = [];
+
+        return view('card.index', ['cards' => $cards]);
         $user = Auth::user();
         $cards = Card::all();
 
@@ -25,6 +28,7 @@ class CardController extends Controller
         });
 
         return view('card.index', ['cards' => $cards_with_allowance]);
+
     }
 
     /**
@@ -61,6 +65,7 @@ class CardController extends Controller
      */
     public function show(Card $card)
     {
+        return view('card.show');
         // dd($card);
         return view('card.show', ['card' => $card]);
     }
@@ -73,7 +78,9 @@ class CardController extends Controller
      */
     public function edit(Card $card)
     {
+        return view('card.edit');
         return view('card.edit', ['card' => $card]);
+
     }
 
     /**
@@ -85,6 +92,7 @@ class CardController extends Controller
      */
     public function update(Request $request, Card $card)
     {
+        redirect()->action('CardController@show', ['id' => $card->id]);
         $card->bg_color = $request->bg_color;
         $card->save();
 
@@ -99,6 +107,9 @@ class CardController extends Controller
      */
     public function destroy(Card $card)
     {
+        redirect()->action('CardController@index');
+    }
+}
         $card->delete();
 
         return redirect()->action('CardController@index');

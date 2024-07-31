@@ -4,6 +4,8 @@
 <h2>Card</h2>
 
 <form action="" method="post">
+@method('put')
+
 @csrf
     <div>
         <label for="bg_color">Hintergrundfarbe (Hex):</label>

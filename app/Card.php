@@ -3,6 +3,11 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+
+
+class Card extends Model
+{
+   
 use Illuminate\Support\Facades\Auth;
 
 class Card extends Model
