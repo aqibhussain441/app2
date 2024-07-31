@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Card;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class CardController extends Controller
 {
@@ -17,6 +19,16 @@ class CardController extends Controller
         $cards = [];
 
         return view('card.index', ['cards' => $cards]);
+        $user = Auth::user();
+        $cards = Card::all();
+
+        $cards_with_allowance = $cards->map(function ($card, $_key) use($user) {
+            $card->is_allowed = $user->cards->contains($card) == true;
+            return $card;
+        });
+
+        return view('card.index', ['cards' => $cards_with_allowance]);
+
     }
 
     /**
@@ -37,6 +49,11 @@ class CardController extends Controller
      */
     public function store(Request $request)
     {
+        $card = new Card;
+
+        $card->bg_color = $request->bg_color;
+
+        $card->save();
         return redirect()->action('CardController@index');
     }
 
@@ -49,6 +66,8 @@ class CardController extends Controller
     public function show(Card $card)
     {
         return view('card.show');
+        // dd($card);
+        return view('card.show', ['card' => $card]);
     }
 
     /**
@@ -60,6 +79,8 @@ class CardController extends Controller
     public function edit(Card $card)
     {
         return view('card.edit');
+        return view('card.edit', ['card' => $card]);
+
     }
 
     /**
@@ -72,6 +93,10 @@ class CardController extends Controller
     public function update(Request $request, Card $card)
     {
         redirect()->action('CardController@show', ['id' => $card->id]);
+        $card->bg_color = $request->bg_color;
+        $card->save();
+
+        return redirect()->route('cards.index');
     }
 
     /**
@@ -85,3 +110,41 @@ class CardController extends Controller
         redirect()->action('CardController@index');
     }
 }
+        $card->delete();
+
+        return redirect()->action('CardController@index');
+    }
+
+    // Generate and respond with business card containing the user's name.
+    public function generate_svg(Card $card)
+    {
+        $user = Auth::user();
+
+        if (Gate::allows('generate-svg', $card))
+        {
+            $svg_image_source = $card->get_svg_for_name($user->name);
+
+            return response()
+                ->make($svg_image_source)
+                ->header('Content-Type', 'image/svg+xml')
+                ->header('Content-Length', strlen($svg_image_source));
+        }
+    }
+
+    // Toggle the rightg to use the given business card for the actual user.
+    public function toggle_allowance(Card $card)
+    {
+        $user = Auth::user();
+
+        if ($user->cards->contains($card) == true)
+        {
+            $user->cards()->detach($card);
+        }
+        else
+        {
+            $user->cards()->attach($card);
+        }
+
+        return redirect()->route('cards.index');
+    }
+}https://www.php.net/manual-lookup.php?pattern=%3F&scope=quickref

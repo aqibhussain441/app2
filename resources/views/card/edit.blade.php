@@ -3,10 +3,18 @@
 @section('content')
 <h2>Card</h2>
 
+
 <form action="" method="post">
     <div>
         <label for="bg_color">Hintergrundfarbe (Hex):</label>
         <input name="bg_color" id= "bg_color" type="text"></input>
+<form action="{{ action('CardController@update', ['card' => $card]) }}" method="post">
+@method('patch')
+@csrf
+    <div>
+        <label for="bg_color">Hintergrundfarbe (Hex):</label>
+        <input name="bg_color" id= "bg_color" type="text" value="{{ $card->bg_color }}"></input>
+
     </div>
     <div>
         <input type="submit" value="speichern"/>
